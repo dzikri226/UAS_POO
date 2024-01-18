@@ -1,0 +1,90 @@
+{% extends 'base.html' %} {% block content %}
+<h1 class="bg-zinc-800 text-center text-5xl py-5 text-white font-bold mb-12">
+  Order Coffee
+</h1>
+<div class="flex items-center justify-evenly">
+  <div class="w-{460px} pr-4">
+    <div
+      class="bg-gray-200 border-solid border-2 border-gray-300 my-5 p-4 rounded-lg shadow-2xl"
+    >
+      <h2 class="text-2xl font-bold mb-4 border-b-2 border-black">
+        Your Order: {{ selected_coffee.name }}
+      </h2>
+      <img
+        class="w-full h-80 rounded"
+        src="{{ selected_coffee.image.url }}"
+        alt="Gambar Kopi"
+      />
+      <p class="text-lg font-bold mt-4">
+        Rp. <span id="product-price">{{ selected_coffee.price }}</span>
+      </p>
+      <form
+        method="post"
+        action="{% url 'order' coffee_id=selected_coffee.id %}"
+      >
+        {% csrf_token %}
+        <input
+          type="hidden"
+          name="coffee_id"
+          value="{{ selected_coffee.id }}"
+        />
+        <label for="quantity">Quantity:</label>
+        <input
+          class="rounded pl-2"
+          type="number"
+          name="quantity"
+          id="quantity"
+          value="{{ quantity }}"
+          min="1"
+          required
+        />
+        <button
+          type="submit"
+          class="bg-zinc-800 text-white px-4 py-2 rounded-lg hover:bg-zinc-700"
+        >
+          Update Order
+        </button>
+      </form>
+    </div>
+  </div>
+  <div
+    class="bg-gray-200 border-solid border-2 border-gray-300 my-5 p-4 rounded-lg shadow-2xl"
+  >
+    <h2
+      class="text-2xl text-center font-bold mx-60 my-2.5 border-b-2 border-black"
+    >
+      Order Details
+    </h2>
+    <p class="border-b-2 border-black p-2">
+      Selected Coffee: {{ selected_coffee.name }}
+    </p>
+    <p class="border-b-2 border-black p-2">
+      Price: Rp. <span id="cart-price">{{ selected_coffee.price }}</span>
+    </p>
+    <p class="border-b-2 border-black p-2">
+      Quantity: <span id="cart-quantity">{{ quantity }}</span>
+    </p>
+    <p class="p-2">Order Time: <span id="order-time"></span></p>
+  </div>
+</div>
+<script>
+  const quantity = document.getElementById("quantity");
+  const price = document.getElementById("product-price");
+  const cartPrice = document.getElementById("cart-price");
+  const cartQuantity = document.getElementById("cart-quantity");
+  const orderTime = document.getElementById("order-time");
+
+  quantity.addEventListener("change", () => {
+    cartPrice.innerHTML = Number(price.innerHTML * quantity.value);
+    cartQuantity.innerHTML = quantity.value;
+  });
+
+  function getCurrentDateTime() {
+    const now = new Date();
+    const formattedDateTime = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+    return formattedDateTime;
+  }
+
+  orderTime.innerHTML = getCurrentDateTime();
+</script>
+{% endblock %}
